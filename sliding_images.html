@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Icon Square</title>
+    <style>
+      .square {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        width: 400px;
+        height: 400px;
+        margin: 0 auto; /* Add this line to center the square horizontally */
+        margin-top: 100px; /* Add this line to adjust the vertical position */
+      }
+
+      .square-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid black;
+      }
+
+      .square-item img {
+        max-width: 100%;
+        max-height: 100%;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div class="square"></div>
+<h2 id="timer">Hello</h2>
+<h2 id="click-count"></h2>
+
+    <script>
+      // Array of image URLs
+      const images = [
+        "Dominos.png",
+        "AVG.png",
+        "BBC.png",
+        "Cartoon-Network_2.png",
+        "Linked-in.png",
+        "Microsoft.png",
+        "Trello.png",
+        "GAP.png",
+      ];
+
+      // Function to shuffle an array using Fisher-Yates algorithm
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Generate the icon square
+        function generateIconSquare() {
+            const square = document.querySelector('.square');
+            const shuffledImages = shuffleArray([...images, ...images]);
+
+            // Initialize the state of the game
+            let firstSelection = null;
+            let secondSelection = null;
+            let canClick = true;
+            
+
+            // Function to handle click on a square item
+            function handleClick() {
+                if (!canClick) return;
+                updateClickCount();
+                const squareItem = this;
+                const index = Array.from(square.children).indexOf(squareItem);
+
+                // Show the clicked image
+                squareItem.innerHTML = `<img src="${shuffledImages[index]}" alt="Icon">`;
+
+                // Store the selections
+                if (firstSelection === null) {
+                    firstSelection = { squareItem, index };
+                } else if (secondSelection === null) {
+                    secondSelection = { squareItem, index };
+                    canClick = false;
+
+                    // Check if the images match
+                    if (shuffledImages[firstSelection.index] === shuffledImages[secondSelection.index]) {
+                        // Images match, keep them displayed for 2 seconds
+                        setTimeout(() => {
+                            firstSelection = null;
+                            secondSelection = null;
+                            canClick = true;
+                        }, 2000);
+                    } else {
+                        // Images do not match, hide them after 2 seconds
+                        setTimeout(() => {
+                            firstSelection.squareItem.innerHTML = '';
+                            secondSelection.squareItem.innerHTML = '';
+                            firstSelection = null;
+                            secondSelection = null;
+                            canClick = true;
+                        }, 2000);
+                    }
+                }
+            }
+
+            // Create the square items
+            for (let i = 0; i < 16; i++) {
+                const squareItem = document.createElement('div');
+                squareItem.classList.add('square-item');
+                square.appendChild(squareItem);
+
+                // Attach click event listener
+                squareItem.addEventListener('click', handleClick);
+            }
+        }
+
+        // Generate and display the icon square
+        generateIconSquare();
+
+    
+   // Initialize the timer
+    let time = 0;
+    let timerInterval;
+
+    // Function to start the timer
+    function startTimer() {
+        const timerElement = document.getElementById('timer');
+        timerElement.textContent = `Timer: ${time}s`;
+
+        timerInterval = setInterval(() => {
+            time++;
+            timerElement.textContent = `Timer: ${time}s`;
+        }, 1000);
+    }
+
+    // Automatically start the timer
+    startTimer();
+
+    let clickCount = 0;
+
+        function updateClickCount() {
+            clickCount++;
+            document.getElementById('click-count').textContent = `Clicks: ${clickCount}`;
+        }
+
+   
+
+
+    </script>
+  </body>
+</html>
